@@ -1,0 +1,9 @@
+name: 'Release tracker'
+author: 'Benjamin Wuethrich'
+description: 'Track latest major and minor releases with branches pointing to them'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+branding:
+  icon: 'git-branch'
+  color: 'blue'
