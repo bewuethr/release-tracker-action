@@ -1,6 +1,6 @@
 name: 'Update tracking branches'
 
-on: 'push'
+on: push
 
 jobs:
   release-tracking:
@@ -9,4 +9,4 @@ jobs:
     - name: 'Check out code'
       uses: 'actions/checkout@v2'
     - name: 'Update branches tracking releases'
-      uses: 'bewuethr/release-tracker-action@v0.1.2'
+      uses: 'bewuethr/release-tracker-action@master'
