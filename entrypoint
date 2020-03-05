@@ -25,7 +25,9 @@ httpupstream=$(git for-each-ref --format='%(upstream:remotename)' \
 
 # Convert remote URL to ssh
 url=$(git remote get-url "$httpupstream")
+echo "::debug::$url"
 upstream=${url/https:\/\//git@}
+echo "::debug::$upstream"
 
 # Move or create branches
 for branch in "${!latest[@]}"; do
