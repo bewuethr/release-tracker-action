@@ -15,10 +15,19 @@ while IFS=. read -r major minor patch; do
 	latest[v"$major.$minor"]="v$major.$minor.$patch"
 done <<< "$(gettags)"
 
-for key in "${!latest[@]}"; do
-	echo "$key --> ${latest["$key"]}"
-done
+# Figure out remote for default branch
+upstream=$(git for-each-ref --format-'%(upstream:remotename)' \
+	"$(git symbolic-ref --quiet HEAD)")
 
-# Check if branches for most recent minor and major tags exist
-# Create new branches at most recent tags without branch
-# For existing branches, fast-forward merge to most recent applicable tag
+# Move or create branches
+for branch in "${!latest[@]}"; do
+	if git show-ref --heads --quiet "$branch"; then
+		git checkout "$branch"
+		git merge --ff-only "${latest["$branch"]}"
+		git push
+	else
+		git checkout "${latest["$branch"]}"
+		git checkout -b "$branch"
+		git push --set-upstream "$upstream" "$branch"
+	fi
+done
