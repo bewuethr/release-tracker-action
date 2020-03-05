@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -vx
+set -x
 
 # List all semver tags minus the "v" and sort them
 gettags() {
@@ -15,7 +15,7 @@ declare -A latest
 while IFS=. read -r major minor patch; do
 	latest[v"$major"]="v$major.$minor.$patch"
 	latest[v"$major.$minor"]="v$major.$minor.$patch"
-done <<< "$(gettags)"
+done < <(gettags)
 
 # Figure out remote for default branch
 upstream=$(git for-each-ref --format='%(upstream:remotename)' \
