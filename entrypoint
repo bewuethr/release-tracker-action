@@ -27,7 +27,7 @@ upstream=$(git for-each-ref --format='%(upstream:remotename)' \
 httpurl=$(git remote get-url "$upstream")
 echo "::debug::$httpurl"
 sshupstream=${httpurl/https:\/\//git@}
-sshupstream=${sshupstream/\/:}
+sshupstream=${sshupstream/\//:}
 echo "::debug::$sshupstream"
 
 # Move or create branches
