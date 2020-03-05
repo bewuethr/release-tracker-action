@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -ex
+set -o errexit
 
 # List all semver tags minus the "v" and sort them
 gettags() {
@@ -9,9 +9,7 @@ gettags() {
 		| sort -t. -n -k1,1 -k2,2 -k3,3
 }
 
-echo "::debug::$(git tag)"
 git fetch --tags
-echo "::debug::$(git tag)"
 
 # Build associative array of most recent major and minor releases
 declare -A latest
@@ -21,11 +19,13 @@ while IFS=. read -r major minor patch; do
 	latest[v"$major.$minor"]="v$major.$minor.$patch"
 done < <(gettags)
 
-echo "::debug::$(declare -p latest)"
-
 # Figure out remote for default branch
-upstream=$(git for-each-ref --format='%(upstream:remotename)' \
+httpupstream=$(git for-each-ref --format='%(upstream:remotename)' \
 	"$(git symbolic-ref --quiet HEAD)")
+
+# Convert remote URL to ssh
+url=$(git remote get-url "$httpupstream")
+upstream=${url/https:\/\//git@}
 
 # Move or create branches
 for branch in "${!latest[@]}"; do
