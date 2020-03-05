@@ -3,7 +3,7 @@ name: 'Update tracking branches'
 on: 'push'
 
 jobs:
-  shellcheck:
+  release-tracking:
     runs-on: 'ubuntu-latest'
     steps:
     - name: 'Check out code'
