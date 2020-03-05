@@ -17,6 +17,8 @@ while IFS=. read -r major minor patch; do
 	latest[v"$major.$minor"]="v$major.$minor.$patch"
 done < <(gettags)
 
+echo "::debug file=entrypoint,line=20::$(declare -p latest)"
+
 # Figure out remote for default branch
 upstream=$(git for-each-ref --format='%(upstream:remotename)' \
 	"$(git symbolic-ref --quiet HEAD)")
