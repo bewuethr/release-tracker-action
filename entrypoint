@@ -20,14 +20,14 @@ while IFS=. read -r major minor patch; do
 done < <(gettags)
 
 # Figure out remote for default branch
-httpupstream=$(git for-each-ref --format='%(upstream:remotename)' \
+upstream=$(git for-each-ref --format='%(upstream:remotename)' \
 	"$(git symbolic-ref --quiet HEAD)")
 
 # Convert remote URL to ssh
-url=$(git remote get-url "$httpupstream")
-echo "::debug::$url"
-upstream="${url/https:\/\//git@}.git"
-echo "::debug::$upstream"
+httpurl=$(git remote get-url "$upstream")
+echo "::debug::$httpurl"
+sshupstream="${httpurl/https:\/\//git@}"
+echo "::debug::$sshupstream"
 
 # Move or create branches
 for branch in "${!latest[@]}"; do
@@ -38,6 +38,6 @@ for branch in "${!latest[@]}"; do
 	else
 		git checkout "${latest["$branch"]}"
 		git checkout -b "$branch"
-		git push --set-upstream "$upstream" "$branch"
+		git push --set-upstream "$sshupstream" "$branch"
 	fi
 done
