@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -x
+
 # List all semver tags minus the "v" and sort them
 gettags() {
 	git tag \
