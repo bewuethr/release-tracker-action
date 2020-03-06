@@ -9,8 +9,8 @@ gettags() {
 		| sort -t. -n -k1,1 -k2,2 -k3,3
 }
 
-git config user.name 'github-actions'
-git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+# git config user.name 'github-actions'
+# git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
 git config advice.detachedHead false
 
 git fetch --tags
@@ -38,4 +38,4 @@ for tag in "${!latest[@]}"; do
 	git checkout "${latest["$tag"]}"
 	git tag --annotate --message="Latest release in $tag" "$tag"
 done
-# git push --tags
+git push --tags
