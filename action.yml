@@ -1,9 +1,9 @@
-name: 'Release tracker'
+name: 'Release tag tracker'
 author: 'Benjamin Wuethrich'
-description: 'Track latest major and minor releases with branches pointing to them'
+description: 'Update tags pointing to latest major and minor releases'
 runs:
   using: 'docker'
   image: 'Dockerfile'
 branding:
-  icon: 'git-branch'
+  icon: 'tag'
   color: 'blue'
