@@ -19,26 +19,16 @@ while IFS=. read -r major minor patch; do
 	latest[v"$major.$minor"]="v$major.$minor.$patch"
 done < <(gettags)
 
-# Figure out remote for default branch
-upstream=$(git for-each-ref --format='%(upstream:remotename)' \
-	"$(git symbolic-ref --quiet HEAD)")
+# Figure out tracking remote for default branch
+# upstream=$(git for-each-ref --format='%(upstream:remotename)' \
+# 	"$(git symbolic-ref --quiet HEAD)")
 
-# Convert remote URL to ssh
-httpurl=$(git remote get-url "$upstream")
-echo "::debug::$httpurl"
-sshupstream=${httpurl/https:\/\//git@}
-sshupstream=${sshupstream/\//:}
-echo "::debug::$sshupstream"
-
-# Move or create branches
-for branch in "${!latest[@]}"; do
-	if git show-ref --heads --quiet "$branch"; then
-		git checkout "$branch"
-		git merge --ff-only "${latest["$branch"]}"
-		git push
-	else
-		git checkout "${latest["$branch"]}"
-		git checkout -b "$branch"
-		git push --set-upstream "$sshupstream" "$branch"
+# Move or create tags
+for tag in "${!latest[@]}"; do
+	if git show-ref --tags --quiet "$tag"; then
+		git tag --delete "$tag"
 	fi
+	git checkout "${latest["$tag"]}"
+	git tag --annotate --message="Latest release in $tag" "$tag"
+	git push --tags
 done
