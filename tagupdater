@@ -11,6 +11,7 @@ gettags() {
 
 git config user.name 'github-actions'
 git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+git config advice.detachedHead false
 
 git fetch --tags
 
@@ -23,8 +24,14 @@ while IFS=. read -r major minor patch; do
 done < <(gettags)
 
 # Figure out tracking remote for default branch
-# upstream=$(git for-each-ref --format='%(upstream:remotename)' \
-# 	"$(git symbolic-ref --quiet HEAD)")
+upstream=$(git for-each-ref --format='%(upstream:remotename)' \
+	"$(git symbolic-ref --quiet HEAD)")
+
+# Set remote with GitHub token
+remoteurl=$(git remote get-url "$upstream")
+echo "$remoteurl"
+
+# git remote set-url --push "$ustream" https://your_username:$GITHUB_TOKEN@github.com/your/repo
 
 # Move or create tags
 for tag in "${!latest[@]}"; do
