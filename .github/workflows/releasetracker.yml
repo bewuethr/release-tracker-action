@@ -10,3 +10,5 @@ jobs:
       uses: 'actions/checkout@v2'
     - name: 'Update release tags for latest major and minor releases'
       uses: 'bewuethr/release-tracker-action@master'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
