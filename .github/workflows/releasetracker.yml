@@ -1,4 +1,4 @@
-name: 'Update tracking branches'
+name: 'Update moving release tags'
 
 on: push
 
@@ -8,5 +8,5 @@ jobs:
     steps:
     - name: 'Check out code'
       uses: 'actions/checkout@v2'
-    - name: 'Update branches tracking releases'
+    - name: 'Update release tags for latest major and minor releases'
       uses: 'bewuethr/release-tracker-action@master'
