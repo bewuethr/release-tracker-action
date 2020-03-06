@@ -30,6 +30,7 @@ upstream=$(git for-each-ref --format='%(upstream:remotename)' \
 # Set remote with GitHub token
 remoteurl=$(git remote get-url "$upstream")
 
+echo "${#GITHUB_TOKEN}"
 git remote set-url --push "$upstream" \
 	"${remoteurl/#https:\/\//https://$GITHUB_TOKEN@}"
 
