@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -o errexit
+set -o errexit -x
 
 # List all semver tags minus the "v" and sort them
 gettags() {
