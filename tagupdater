@@ -29,7 +29,7 @@ while IFS=. read -r major minor patch; do
 done < <(gettags)
 
 git remote set-url --push origin \
-	"https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}"
+	"https://${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}"
 
 # Move or create tags
 for tag in "${!latest[@]}"; do
