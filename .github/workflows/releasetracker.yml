@@ -11,8 +11,6 @@ jobs:
     steps:
     - name: 'Check out code'
       uses: 'actions/checkout@v2'
-      with:
-        fetch-depth: 0
     - name: 'Update release tags for latest major and minor releases'
       uses: 'bewuethr/release-tracker-action@master'
       env:
