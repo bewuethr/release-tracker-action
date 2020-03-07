@@ -40,4 +40,4 @@ for tag in "${!latest[@]}"; do
 	fi
 	git tag --annotate --message="Latest release in $tag" "$tag" "${latest["$tag"]}"^{}
 done
-git push origin "${!latest[@]}"
+# git push origin "${!latest[@]}"
