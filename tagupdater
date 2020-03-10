@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 
-set -o errexit -x
+set -o errexit
+
+# Global constants
+declare -r \
+	gitname='github-actions' \
+	gitemail='41898282+github-actions[bot]@users.noreply.github.com' \
+	apibaseurl='https://api.github.com'
 
 # List all semver tags minus the "v" and sort them; busybox sort doesn't have
 # version sort
@@ -10,9 +16,66 @@ gettags() {
 		| sort -t. -n -k1,1 -k2,2 -k3,3
 }
 
-# Set Git user and email to bot
-git config user.name 'github-actions'
-git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+makeapipostcall() {
+	local route=$1
+	local payload=$2
+	local respfilter=$3
+
+	curl \
+		--fail \
+		--location \
+		--header "Content-Type: application/json" \
+		--header "Accept: application/vnd.github.v3+json" \
+		--header "User-Agent: bewuethr/release-tracker-action" \
+		--header "Authorization: Bearer $GITHUB_TOKEN" \
+		--data-raw "$payload" \
+		"$apibaseurl$route" \
+		| jq "$respfilter"
+}
+
+createannotatedtag() {
+	local tag=$1
+
+	# Find SHA of object tag points to
+	local sha
+	sha=$(git rev-parse --verify "${latest["$tag"]}^{}")
+
+	# Create tag object
+	local message="latest release in $tag\n"
+	local taggerdate
+	taggerdate=$(date -I'seconds')
+	local payload
+	payload=$(cat <<-EOF
+		{
+		  "tag": "$tag",
+		  "message": "$message",
+		  "object": "$sha",
+		  "type": "commit",
+		  "tagger": {
+		    "name": "$gitname",
+		    "email": "$gitemail",
+		    "date": "$taggerdate"
+		  }
+		}
+	EOF
+	)
+
+	local tagsha
+	echo "Making API call to create tag object for $tag..."
+	tagsha=$(makeapipostcall "/repos/$GITHUB_REPOSITORY/git/tags" "$payload" '.sha')
+
+	# Create tag reference
+	payload=$(cat <<-EOF
+		{
+		  "ref": "refs/tags/$tag",
+		  "sha": "$tagsha"
+		}
+	EOF
+	)
+
+	echo "Making API call to create reference for $tag..."
+	makeapipostcall "/repos/$GITHUB_REPOSITORY/git/refs" "$payload" '.'
+}
 
 # Suppress detached HEAD warning
 git config advice.detachedHead false
@@ -23,21 +86,21 @@ git fetch --tags --force
 # Build associative array of most recent major and minor releases
 declare -A latest
 
+echo "Building tag table..."
 while IFS=. read -r major minor patch; do
 	latest["v$major"]="v$major.$minor.$patch"
 	latest["v$major.$minor"]="v$major.$minor.$patch"
 done < <(gettags)
 
-# git remote set-url --push origin \
-# 	"https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
-
 # Move or create tags
 for tag in "${!latest[@]}"; do
+	echo "Checking $tag..."
 	if git show-ref --tags --quiet "$tag"; then
 		# Delete local and remote tag
+		echo "Deleting $tag..."
 		git tag --delete "$tag"
 		git push --delete origin "$tag"
 	fi
-	git tag --annotate --message="Latest release in $tag" "$tag" "${latest["$tag"]}"^{}
+	echo "Created annotated tag $tag..."
+	createannotatedtag "$tag"
 done
-git push origin "${!latest[@]}"
