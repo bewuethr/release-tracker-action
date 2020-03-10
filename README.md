@@ -1,3 +1,3 @@
 # release-tracker-action
 
-A GitHub action.
+A GitHub action...
