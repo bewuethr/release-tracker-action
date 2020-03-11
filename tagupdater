@@ -29,6 +29,8 @@ makeapipostcall() {
 	local payload=$2
 	local respfilter=$3
 
+	echo "Making POST call to $apibaseurl$route..."
+
 	local res
 	if ! res=$(
 		curl \
