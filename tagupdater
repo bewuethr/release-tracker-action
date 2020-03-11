@@ -8,6 +8,12 @@ declare -r \
 	gitemail='41898282+github-actions[bot]@users.noreply.github.com' \
 	apibaseurl='https://api.github.com'
 
+# Print error message and exit
+die() {
+	printf '%s\n' "$*" >&2
+	exit 1
+}
+
 # List all semver tags minus the "v" and sort them; busybox sort doesn't have
 # version sort
 gettags() {
@@ -16,23 +22,31 @@ gettags() {
 		| sort -t. -n -k1,1 -k2,2 -k3,3
 }
 
+# Make POST API call to GitHub API; respfilter is a jq filter to be applied to
+# the response
 makeapipostcall() {
 	local route=$1
 	local payload=$2
 	local respfilter=$3
 
-	curl \
-		--fail \
-		--location \
-		--header "Content-Type: application/json" \
-		--header "Accept: application/vnd.github.v3+json" \
-		--header "User-Agent: bewuethr/release-tracker-action" \
-		--header "Authorization: Bearer $GITHUB_TOKEN" \
-		--data-raw "$payload" \
-		"$apibaseurl$route" \
-		| jq "$respfilter"
+	local res
+	if ! res=$(
+		curl \
+			--fail \
+			--location \
+			--header "Content-Type: application/json" \
+			--header "Accept: application/vnd.github.v3+json" \
+			--header "User-Agent: bewuethr/release-tracker-action" \
+			--header "Authorization: Bearer $GITHUB_TOKEN" \
+			--data-raw "$payload" \
+			"$apibaseurl$route"
+	); then
+		die "curl unsuccessful; response: $res"
+	fi
+	jq "$respfilter" <<< "$res"
 }
 
+# Create an annotated tag: create a tag object, then a tag reference
 createannotatedtag() {
 	local tag=$1
 
@@ -45,19 +59,20 @@ createannotatedtag() {
 	local taggerdate
 	taggerdate=$(date -I'seconds')
 	local payload
-	payload=$(cat <<-EOF
-		{
-		  "tag": "$tag",
-		  "message": "$message",
-		  "object": "$sha",
-		  "type": "commit",
-		  "tagger": {
-		    "name": "$gitname",
-		    "email": "$gitemail",
-		    "date": "$taggerdate"
-		  }
-		}
-	EOF
+	payload=$(
+		cat <<- EOF
+			{
+			  "tag": "$tag",
+			  "message": "$message",
+			  "object": "$sha",
+			  "type": "commit",
+			  "tagger": {
+			    "name": "$gitname",
+			    "email": "$gitemail",
+			    "date": "$taggerdate"
+			  }
+			}
+		EOF
 	)
 
 	local tagsha
@@ -65,12 +80,13 @@ createannotatedtag() {
 	tagsha=$(makeapipostcall "/repos/$GITHUB_REPOSITORY/git/tags" "$payload" '.sha')
 
 	# Create tag reference
-	payload=$(cat <<-EOF
-		{
-		  "ref": "refs/tags/$tag",
-		  "sha": "$tagsha"
-		}
-	EOF
+	payload=$(
+		cat <<- EOF
+			{
+			  "ref": "refs/tags/$tag",
+			  "sha": "$tagsha"
+			}
+		EOF
 	)
 
 	echo "Making API call to create reference for $tag..."
