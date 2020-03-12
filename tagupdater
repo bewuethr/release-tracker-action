@@ -29,7 +29,8 @@ makeapipostcall() {
 	local payload=$2
 	local respfilter=$3
 
-	echo "Making POST call to $apibaseurl$route..."
+	printf '::debug::Making POST call to %s with payload\n%s\n' \
+		"$apibaseurl$route"  "$payload" >&2
 
 	local res
 	if ! res=$(
@@ -43,9 +44,9 @@ makeapipostcall() {
 			--data-raw "$payload" \
 			"$apibaseurl$route"
 	); then
-		die "curl unsuccessful; response: $res"
+		die "curl unsuccessful"
 	fi
-	jq "$respfilter" <<< "$res"
+	jq -r "$respfilter" <<< "$res"
 }
 
 # Create an annotated tag: create a tag object, then a tag reference
