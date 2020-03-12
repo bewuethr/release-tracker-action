@@ -41,6 +41,7 @@ makeapipostcall() {
 			--header "Content-Type: application/json" \
 			--header "Accept: application/vnd.github.v3+json" \
 			--header "User-Agent: bewuethr/release-tracker-action" \
+			--header "Time-Zone: America/Toronto" \
 			--header "Authorization: Bearer $GITHUB_TOKEN" \
 			--data-raw "$payload" \
 			"$apibaseurl$route"
@@ -61,7 +62,7 @@ createannotatedtag() {
 	# Create tag object
 	local message="latest release in $tag\n"
 	local taggerdate
-	taggerdate=$(date -I'seconds')
+	taggerdate=$(date '+%FT%T')
 	local payload
 	payload=$(
 		cat <<- EOF
