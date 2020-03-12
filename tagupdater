@@ -35,7 +35,6 @@ makeapipostcall() {
 	local res
 	if ! res=$(
 		curl \
-			--verbose \
 			--fail \
 			--location \
 			--header "Content-Type: application/json" \
