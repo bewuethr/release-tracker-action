@@ -37,6 +37,8 @@ makeapipostcall() {
 		curl \
 			--fail \
 			--location \
+			--silent \
+			--show-error \
 			--header "Content-Type: application/json" \
 			--header "Accept: application/vnd.github.v3+json" \
 			--header "User-Agent: bewuethr/release-tracker-action" \
