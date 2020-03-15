@@ -2,8 +2,10 @@ name: 'Linting'
 
 on:
   push:
+    branches:
+      - '**'
     tags-ignore:
-      - '*'
+      - '**'
 
 jobs:
 
