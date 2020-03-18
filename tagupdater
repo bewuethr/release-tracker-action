@@ -34,13 +34,8 @@ makeapipostcall() {
 	local route=$1
 	local payload=$2
 	local respfilter=$3
-
-	local debug
-	printf -v debug 'Making POST call to %s with payload\n%s\n' \
-		"$apibaseurl$route" "$payload"
-	echo "::debug::$debug" >&2
-
 	local res
+
 	if ! res=$(
 		curl \
 			--fail \
