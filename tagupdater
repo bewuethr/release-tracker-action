@@ -125,7 +125,7 @@ for tag in "${!latest[@]}"; do
 	semvertag=${latest["$tag"]}
 	if git show-ref --tags --quiet "$tag"; then
 		if [[ $(getparentsha "$tag") == $(getparentsha "$semvertag") ]]; then
-			# Tag already points to right commit
+			echo "$tag already points to same commit as $semvertag, skipping..."
 			continue
 		fi
 		# Delete local and remote tag
