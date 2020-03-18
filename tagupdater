@@ -22,6 +22,12 @@ gettags() {
 		| sort -t. -n -k1,1 -k2,2 -k3,3
 }
 
+# Get SHA of object ref points to
+getparentsha() {
+	local ref=$1
+	git rev-parse --verify "$ref^{}"
+}
+
 # Make POST API call to GitHub API; respfilter is a jq filter to be applied to
 # the response
 makeapipostcall() {
@@ -29,8 +35,10 @@ makeapipostcall() {
 	local payload=$2
 	local respfilter=$3
 
-	printf '::debug::Making POST call to %s with payload\n%s\n' \
-		"$apibaseurl$route"  "$payload" >&2
+	local debug
+	printf -v debug 'Making POST call to %s with payload\n%s\n' \
+		"$apibaseurl$route" "$payload"
+	echo "::debug::$debug" >&2
 
 	local res
 	if ! res=$(
@@ -54,10 +62,11 @@ makeapipostcall() {
 # Create an annotated tag: create a tag object, then a tag reference
 createannotatedtag() {
 	local tag=$1
+	local semvertag=$2
 
 	# Find SHA of object tag points to
 	local sha
-	sha=$(git rev-parse --verify "${latest["$tag"]}^{}")
+	sha=$(getparentsha "$semvertag")
 
 	# Create tag object
 	local message="latest release in $tag\n"
@@ -113,12 +122,17 @@ done < <(gettags)
 # Move or create tags
 for tag in "${!latest[@]}"; do
 	echo "Checking $tag..."
+	semvertag=${latest["$tag"]}
 	if git show-ref --tags --quiet "$tag"; then
+		if [[ $(getparentsha "$tag") == $(getparentsha "$semvertag") ]]; then
+			# Tag already points to right commit
+			continue
+		fi
 		# Delete local and remote tag
 		echo "Deleting $tag..."
 		git tag --delete "$tag"
 		git push --delete origin "$tag"
 	fi
-	echo "Created annotated tag $tag..."
-	createannotatedtag "$tag"
+	echo "Creating annotated tag $tag pointing to same commit as $semvertag..."
+	createannotatedtag "$tag" "$semvertag"
 done
