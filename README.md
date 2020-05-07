@@ -49,7 +49,7 @@ themselves.
 
 This can be used to let consumers of an action use it with a statement like
 
-```yml
+```yaml
 uses: username/action@v1
 ```
 
@@ -70,28 +70,28 @@ The action runs on itself and the current major release is `v1`.
 
 A workflow using this action might look like this:
 
-```yml
+```yaml
 # Only run when new semver tag is pushed
 on:
   push:
     tags:
       - v[0-9]+.[0-9]+.[0-9]+
 
-name: 'Move release tags'
+name: Move release tags
 
 jobs:
   update-release-tags:
-    runs-on: 'ubuntu-latest'
+    runs-on: ubuntu-latest
     steps:
 
-      - name: 'Check out code'
-        uses: 'actions/checkout@v2'
+      - name: Check out code
+        uses: actions/checkout@v2
         # Get complete history
         with:
           fetch-depth: 0
 
-      - name: 'Update release tags for latest major and minor releases'
-        uses: 'bewuethr/release-tracker-action@v1'
+      - name: Update release tags for latest major and minor releases
+        uses: bewuethr/release-tracker-action@v1
         # Required for API access to push new tags
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

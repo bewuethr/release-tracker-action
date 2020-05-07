@@ -1,9 +1,9 @@
-name: 'Release tag tracker'
-author: 'Benjamin Wuethrich'
-description: 'Update tags pointing to latest major and minor releases'
+name: Release tag tracker
+author: Benjamin Wuethrich
+description: Update tags pointing to latest major and minor releases
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
+  using: docker
+  image: Dockerfile
 branding:
-  icon: 'tag'
-  color: 'blue'
+  icon: tag
+  color: blue
