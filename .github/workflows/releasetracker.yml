@@ -19,4 +19,4 @@ jobs:
           ref: master
 
       - name: Update release tags for latest major and minor releases
-        uses: bewuethr/release-tracker-action@v1
+        uses: bewuethr/release-tracker-action@v1.1.6
