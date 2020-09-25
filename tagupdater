@@ -63,6 +63,10 @@ createannotatedtag() {
 	local sha
 	sha=$(getparentsha "$semvertag")
 
+	git tag --annotate --message="latest release in $tag" "$tag" "$sha"
+	git push --follow-tags
+	return 0
+
 	# Create tag object
 	local message="latest release in $tag\n"
 	local payload
