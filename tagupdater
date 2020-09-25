@@ -109,6 +109,10 @@ git config advice.detachedHead false
 # Clobber local tags
 git fetch --tags --force
 
+# Set git name and email
+git config --global user.email "$gitname"
+git config --global user.name "$gitemail"
+
 # Build associative array of most recent major and minor releases
 declare -A latest
 
