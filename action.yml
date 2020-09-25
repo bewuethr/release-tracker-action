@@ -1,9 +1,11 @@
 name: Release tag tracker
 author: Benjamin Wuethrich
 description: Update tags pointing to latest major and minor releases
-runs:
-  using: docker
-  image: Dockerfile
 branding:
   icon: tag
   color: blue
+runs:
+  using: composite
+  steps:
+    - run: ${{ github.action_path }}/tagupdater
+      shell: bash

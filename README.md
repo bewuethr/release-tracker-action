@@ -86,13 +86,12 @@ jobs:
 
       - name: Check out code
         uses: actions/checkout@v2
-        # Get complete history
         with:
+          # Get complete history
           fetch-depth: 0
+          # Always check out a branch
+          ref: master
 
       - name: Update release tags for latest major and minor releases
         uses: bewuethr/release-tracker-action@v1
-        # Required for API access to push new tags
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```

@@ -1,25 +1,13 @@
 #!/usr/bin/env bash
 
-set -o errexit
-
-# Global constants
-declare -r \
-	gitname='github-actions' \
-	gitemail='41898282+github-actions[bot]@users.noreply.github.com' \
-	apibaseurl='https://api.github.com'
-
-# Print error message and exit
-die() {
-	printf '%s\n' "$*" >&2
-	exit 1
-}
+set -o errexit pipefail
 
 # List all semver tags minus the "v" and sort them; busybox sort doesn't have
 # version sort
 gettags() {
 	git tag \
-		| sed -rn 's/v(([[:digit:]]+\.){2}[[:digit:]]+)/\1/p' \
-		| sort -t. -n -k1,1 -k2,2 -k3,3
+		| sed --regexp-extended --quiet 's/v(([[:digit:]]+\.){2}[[:digit:]]+)/\1/p' \
+		| sort --version-sort
 }
 
 # Get SHA of object ref points to
@@ -28,33 +16,7 @@ getparentsha() {
 	git rev-parse --verify "$ref^{}"
 }
 
-# Make POST API call to GitHub API; respfilter is a jq filter to be applied to
-# the response
-makeapipostcall() {
-	local route=$1
-	local payload=$2
-	local respfilter=$3
-	local res
-
-	if ! res=$(
-		curl \
-			--fail \
-			--location \
-			--silent \
-			--show-error \
-			--header "Content-Type: application/json" \
-			--header "Accept: application/vnd.github.v3+json" \
-			--header "User-Agent: bewuethr/release-tracker-action" \
-			--header "Authorization: Bearer $GITHUB_TOKEN" \
-			--data-raw "$payload" \
-			"$apibaseurl$route"
-	); then
-		die "curl unsuccessful"
-	fi
-	jq -r "$respfilter" <<< "$res"
-}
-
-# Create an annotated tag: create a tag object, then a tag reference
+# Create an annotated tag
 createannotatedtag() {
 	local tag=$1
 	local semvertag=$2
@@ -64,43 +26,29 @@ createannotatedtag() {
 	sha=$(getparentsha "$semvertag")
 
 	# Create tag object
-	local message="latest release in $tag\n"
-	local payload
-	payload=$(
-		cat <<- EOF
-			{
-			  "tag": "$tag",
-			  "message": "$message",
-			  "object": "$sha",
-			  "type": "commit",
-			  "tagger": {
-			    "name": "$gitname",
-			    "email": "$gitemail"
-			  }
-			}
-		EOF
-	)
-
+	echo "Creating tag object for $tag..."
 	local tagsha
-	echo "Making API call to create tag object for $tag..."
-	tagsha=$(makeapipostcall "/repos/$GITHUB_REPOSITORY/git/tags" "$payload" '.sha')
+	tagsha=$(gh api repos/:owner/:repo/git/tags \
+		--raw-field "tag=$tag" \
+		--raw-field "message=latest release in $tag" \
+		--raw-field "object=$sha" \
+		--raw-field "type=commit" \
+		| jq --raw-output '.sha')
 
 	# Create tag reference
-	payload=$(
-		cat <<- EOF
-			{
-			  "ref": "refs/tags/$tag",
-			  "sha": "$tagsha"
-			}
-		EOF
-	)
-
-	echo "Making API call to create reference for $tag..."
-	makeapipostcall "/repos/$GITHUB_REPOSITORY/git/refs" "$payload" '.'
+	echo "Creating tag reference..."
+	gh api repos/:owner/:repo/git/refs \
+		--raw-field "ref=refs/tags/$tag" \
+		--raw-field "sha=$tagsha" \
+		| jq .
 }
 
 # Suppress detached HEAD warning
 git config advice.detachedHead false
+
+# Set git name and email
+git config --global user.name "github-actions"
+git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
 # Clobber local tags
 git fetch --tags --force
