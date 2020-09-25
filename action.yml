@@ -5,3 +5,4 @@ runs:
   using: composite
   steps:
     - run: ${{ github.action_path }}/tagupdater
+      shell: bash
