@@ -29,7 +29,7 @@ createannotatedtag() {
 		--raw-field "message=latest release in $tag" \
 		--raw-field "object=$sha" \
 		--raw-field "type=commit" \
-		| jq --raw-output '.sha')
+		--jq '.sha')
 
 	# Create tag reference
 	echo "Creating tag reference..."
