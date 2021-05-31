@@ -1,11 +1,17 @@
 name: Release tag tracker
+
 author: Benjamin Wuethrich
+
 description: Update tags pointing to latest major and minor releases
+
 branding:
   icon: tag
   color: blue
+
 runs:
   using: composite
+
   steps:
-    - run: ${{ github.action_path }}/tagupdater
+    - name: Run tag updater
+      run: ${{ github.action_path }}/tagupdater
       shell: bash
