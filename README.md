@@ -1,7 +1,7 @@
 # release-tracker-action
 
-![Linting](https://github.com/bewuethr/release-tracker-action/workflows/Linting/badge.svg)
-![Move release tags](https://github.com/bewuethr/release-tracker-action/workflows/Move%20release%20tags/badge.svg)
+[![Lint code base](https://github.com/bewuethr/release-tracker-action/actions/workflows/lint.yml/badge.svg)](https://github.com/bewuethr/release-tracker-action/actions/workflows/lint.yml)
+[![Move release tags](https://github.com/bewuethr/release-tracker-action/actions/workflows/releasetracker.yml/badge.svg)](https://github.com/bewuethr/release-tracker-action/actions/workflows/releasetracker.yml)
 
 This action finds the most recent major and minor release tags and creates
 or moves tags to point at them.
