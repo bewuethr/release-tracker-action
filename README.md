@@ -90,7 +90,7 @@ jobs:
           # Get complete history
           fetch-depth: 0
           # Always check out a branch
-          ref: master
+          ref: main
 
       - name: Update release tags for latest major and minor releases
         uses: bewuethr/release-tracker-action@v1
