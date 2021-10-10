@@ -4,6 +4,10 @@
 gettags() {
 	git tag --list --sort='version:refname' 'v*.*.*'
 }
+
+# Get latest semver tag
+getlatesttag() {
+	gettags | head --lines=1
 }
 
 # Get SHA of object ref points to
@@ -40,6 +44,18 @@ createannotatedtag() {
 }
 
 main() {
+	# Parse options
+	local opt updatelatest
+	while getopts 'l' opt; do
+		case $opt in
+			l) updatelatest='true' ;;
+			'?')
+				echo "invalid option in $*" >&2
+				exit 1
+				;;
+		esac
+	done
+
 	# Set git name and email
 	git config --global user.name "github-actions"
 	git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -56,6 +72,11 @@ main() {
 		latest["$major"]="$major.$minor.$patch"
 		latest["$major.$minor"]="$major.$minor.$patch"
 	done < <(gettags)
+
+	# Add "latest" tag if there are tags and the option is set
+	if ((${#latest[@]})) && [[ $updatelatest == 'true' ]]; then
+		latest['latest']=$(getlatesttag)
+	fi
 
 	# Move or create tags
 	local tag semvertag
