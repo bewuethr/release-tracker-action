@@ -48,7 +48,7 @@ main() {
 	git fetch --tags --force
 
 	# Build associative array of most recent major and minor releases
-	declare -A latest
+	local -A latest
 
 	echo "Building tag table..."
 	local major minor patch
