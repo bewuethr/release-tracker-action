@@ -2,8 +2,8 @@
 
 # List all semver tags and sort them
 gettags() {
-	git tag --list 'v*.*.*' \
-		| sort --version-sort
+	git tag --list --sort='version:refname' 'v*.*.*'
+}
 }
 
 # Get SHA of object ref points to
