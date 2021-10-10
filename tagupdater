@@ -24,7 +24,7 @@ createannotatedtag() {
 	# Create tag object
 	echo "Creating tag object for $tag..."
 	local tagsha
-	tagsha=$(gh api repos/:owner/:repo/git/tags \
+	tagsha=$(gh api 'repos/{owner}/{repo}/git/tags' \
 		--raw-field "tag=$tag" \
 		--raw-field "message=latest release in $tag" \
 		--raw-field "object=$sha" \
@@ -33,7 +33,7 @@ createannotatedtag() {
 
 	# Create tag reference
 	echo "Creating tag reference..."
-	gh api repos/:owner/:repo/git/refs \
+	gh api 'repos/{owner}/{repo}/git/refs' \
 		--raw-field "ref=refs/tags/$tag" \
 		--raw-field "sha=$tagsha" \
 		| jq .
@@ -63,7 +63,7 @@ main() {
 		echo "Checking $tag..."
 		semvertag=${latest["$tag"]}
 		if git show-ref --tags --quiet "$tag"; then
-			if [[ $(getparentsha "$tag") == $(getparentsha "$semvertag") ]]; then
+			if [[ $(getparentsha "$tag") == "$(getparentsha "$semvertag")" ]]; then
 				echo "$tag already points to same commit as $semvertag, skipping..."
 				continue
 			fi
