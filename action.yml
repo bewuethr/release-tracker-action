@@ -8,10 +8,20 @@ branding:
   icon: tag
   color: blue
 
+inputs:
+  update-latest:
+    description: Update a "latest" tag
+    required: false
+    default: false
+
 runs:
   using: composite
 
   steps:
     - name: Run tag updater
-      run: ${{ github.action_path }}/tagupdater
       shell: bash
+      run: |
+        if [[ ${{ inputs.update-latest }} == 'true' ]]; then
+            params+=('-l')
+        fi
+        '${{ github.action_path }}/tagupdater' "${params[@]}"
