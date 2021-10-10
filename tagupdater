@@ -7,7 +7,7 @@ gettags() {
 
 # Get latest semver tag
 getlatesttag() {
-	gettags | head --lines=1
+	gettags | tail --lines=1
 }
 
 # Get SHA of object ref points to
