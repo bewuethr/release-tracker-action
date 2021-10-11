@@ -45,14 +45,12 @@ createannotatedtag() {
 
 main() {
 	# Parse options
-	local opt updatelatest
-	while getopts 'l' opt; do
+	local opt updatelatest updateminor
+	while getopts 'lm' opt; do
 		case $opt in
 			l) updatelatest='true' ;;
-			'?')
-				echo "invalid option in $*" >&2
-				exit 1
-				;;
+			m) updateminor='true' ;;
+			'?') exit 1 ;;
 		esac
 	done
 
@@ -70,7 +68,7 @@ main() {
 	local major minor patch
 	while IFS=. read -r major minor patch; do
 		latest["$major"]="$major.$minor.$patch"
-		latest["$major.$minor"]="$major.$minor.$patch"
+		[[ $updateminor == 'true' ]] && latest["$major.$minor"]="$major.$minor.$patch"
 	done < <(gettags)
 
 	# Add "latest" tag if there are tags and the option is set
