@@ -8,8 +8,8 @@
 [movebadge]: <https://github.com/bewuethr/release-tracker-action/actions/workflows/releasetracker.yml/badge.svg>
 [moveflow]:  <https://github.com/bewuethr/release-tracker-action/actions/workflows/releasetracker.yml>
 
-This action finds the most recent major and minor release tags and creates
-or moves tags to point at them.
+This action finds the most recent major and (optionally) minor release tags,
+and creates or moves tags to point at them.
 
 For example, in a repository with these tags:
 
@@ -71,6 +71,11 @@ correct most recent release.
 recent semver tag overall. This updates across major versions, i.e., might
 break a workflow. Default `false`.
 
+### `update-minor`
+
+**Optional** If `true`, the tags with the format `vX.Y` to point at the most
+recent patch version within a minor version are updated. Default `true`.
+
 ## Example usage
 
 It makes sense to run this action only when a new semantic versioning tag
@@ -104,7 +109,7 @@ jobs:
           # Get complete history
           fetch-depth: 0
 
-      - name: Update vX, vX.Y, and latest tags
+      - name: Update major version and latest tags
         uses: bewuethr/release-tracker-action@v1
         env:
           # GitHub token to enable pushing tags
@@ -112,4 +117,6 @@ jobs:
         with:
           # Move "latest" tag
           update-latest: true
+          # Don't update the vX.Y tags
+          update-minor: false
 ```
