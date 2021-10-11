@@ -14,6 +14,11 @@ inputs:
     required: false
     default: false
 
+  update-minor:
+    description: Update vX.Y tags
+    required: false
+    default: true
+
 runs:
   using: composite
 
@@ -24,4 +29,9 @@ runs:
         if [[ ${{ inputs.update-latest }} == 'true' ]]; then
             params+=('-l')
         fi
+
+        if [[ ${{ inputs.update-minor }} == 'true' ]]; then
+            params+=('-m')
+        fi
+
         '${{ github.action_path }}/tagupdater' "${params[@]}"
