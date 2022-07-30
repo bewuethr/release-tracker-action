@@ -3,8 +3,8 @@
 [![Lint code base][lintbadge]][lintflow]
 [![Move release tags][movebadge]][moveflow]
 
-[lintbadge]: <https://github.com/bewuethr/release-tracker-action/actions/workflows/lint.yml/badge.svg>
-[lintflow]:  <https://github.com/bewuethr/release-tracker-action/actions/workflows/lint.yml>
+[lintbadge]: <https://github.com/bewuethr/release-tracker-action/actions/workflows/linter.yml/badge.svg>
+[lintflow]:  <https://github.com/bewuethr/release-tracker-action/actions/workflows/linter.yml>
 [movebadge]: <https://github.com/bewuethr/release-tracker-action/actions/workflows/releasetracker.yml/badge.svg>
 [moveflow]:  <https://github.com/bewuethr/release-tracker-action/actions/workflows/releasetracker.yml>
 
