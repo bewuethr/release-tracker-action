@@ -25,13 +25,16 @@ runs:
   steps:
     - name: Run tag updater
       shell: bash
+      env:
+        latest: ${{ inputs.update-latest }}
+        minor: ${{ inputs.update-minor }}
       run: |
-        if [[ ${{ inputs.update-latest }} == 'true' ]]; then
+        if [[ $latest == 'true' ]]; then
             params+=('-l')
         fi
 
-        if [[ ${{ inputs.update-minor }} == 'true' ]]; then
+        if [[ $minor == 'true' ]]; then
             params+=('-m')
         fi
 
-        '${{ github.action_path }}/tagupdater' "${params[@]}"
+        "$GITHUB_ACTION_PATH/tagupdater" "${params[@]}"
