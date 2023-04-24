@@ -76,6 +76,31 @@ break a workflow. Default `false`.
 **Optional** If `true`, the tags with the format `vX.Y` to point at the most
 recent patch version within a minor version are updated. Default `true`.
 
+### `prepend-v`
+
+**Optional** If `true`, tags are expected to look like `vX.Y.Z`, and the moving
+tags like `vX.Y` (if enabled) and `vX`. If `false`, the "v" is dropped, and
+tags look like `X.Y.Z`, `X.Y`, and `X`:
+
+```txt
+0.1.0
+0.1.1
+0.1.2
+0.1.3 <-- 0.1
+0.2.0
+0.2.1
+0.2.2
+0.2.3
+0.2.4 <-- 0.2 <-- 0
+1.0.0
+1.0.1 <-- 1.0
+1.1.0
+1.1.1
+1.1.2 <-- 1.1 <-- 1 <-- latest
+```
+
+Default `true`.
+
 ## Example usage
 
 It makes sense to run this action only when a new semantic versioning tag
@@ -95,6 +120,7 @@ name: Update release tags
 on:
   push:
     tags:
+      # Switch to '[0-9]+.[0-9]+.[0-9]+' if prepend-v is false
       - v[0-9]+.[0-9]+.[0-9]+
 
 jobs:
@@ -119,4 +145,6 @@ jobs:
           update-latest: true
           # Don't update the vX.Y tags
           update-minor: false
+          # Expect vX.Y.Z format (default)
+          prepend-v: true
 ```
