@@ -19,6 +19,11 @@ inputs:
     required: false
     default: true
 
+  prepend-v:
+    description: Create tags in vX.Y.Z format
+    required: false
+    default: true
+
 runs:
   using: composite
 
@@ -28,6 +33,7 @@ runs:
       env:
         latest: ${{ inputs.update-latest }}
         minor: ${{ inputs.update-minor }}
+        prependv: ${{ inputs.prepend-v }}
       run: |
         if [[ $latest == 'true' ]]; then
             params+=('-l')
@@ -35,6 +41,10 @@ runs:
 
         if [[ $minor == 'true' ]]; then
             params+=('-m')
+        fi
+
+        if [[ $prependv == 'false' ]]; then
+            params+=('-v')
         fi
 
         "$GITHUB_ACTION_PATH/tagupdater" "${params[@]}"
