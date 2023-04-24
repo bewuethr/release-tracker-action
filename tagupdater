@@ -2,13 +2,15 @@
 
 # List all semver tags and sort them; exclude pre-release tags
 gettags() {
-	git tag --list --sort='version:refname' 'v*.*.*' \
-		| grep --extended-regexp '^v([[:digit:]]+\.){2}[[:digit:]]+$'
+	local prefix=$1
+	git tag --list --sort='version:refname' "$prefix*.*.*" \
+		| grep --extended-regexp "^$prefix([[:digit:]]+\.){2}[[:digit:]]+$"
 }
 
 # Get latest semver tag
 getlatesttag() {
-	gettags | tail --lines=1
+	local prefix=$1
+	gettags "$prefix" | tail --lines=1
 }
 
 # Get SHA of object ref points to
@@ -46,11 +48,13 @@ createannotatedtag() {
 
 main() {
 	# Parse options
-	local opt updatelatest updateminor
-	while getopts 'lm' opt; do
+	local opt updatelatest updateminor prefix
+	prefix='v'
+	while getopts 'lmv' opt; do
 		case $opt in
 			l) updatelatest='true' ;;
 			m) updateminor='true' ;;
+			v) prefix='' ;;
 			'?') exit 1 ;;
 		esac
 	done
@@ -70,11 +74,11 @@ main() {
 	while IFS=. read -r major minor patch; do
 		latest["$major"]="$major.$minor.$patch"
 		[[ $updateminor == 'true' ]] && latest["$major.$minor"]="$major.$minor.$patch"
-	done < <(gettags)
+	done < <(gettags "$prefix")
 
 	# Add "latest" tag if there are tags and the option is set
 	if ((${#latest[@]})) && [[ $updatelatest == 'true' ]]; then
-		latest['latest']=$(getlatesttag)
+		latest['latest']=$(getlatesttag "$prefix")
 	fi
 
 	# Move or create tags
