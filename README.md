@@ -127,10 +127,12 @@ jobs:
   update-release-tags:
     name: Update tags
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
 
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           # Get complete history
           fetch-depth: 0
