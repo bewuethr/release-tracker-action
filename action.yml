@@ -57,6 +57,6 @@ runs:
             params+=('-v')
         fi
 
-        !!!ADD PRE-RELEASE VERSIONS TO PARAMS!!!
+        params+=($prereleaseversions)
 
         "$GITHUB_ACTION_PATH/tagupdater" "${params[@]}"
