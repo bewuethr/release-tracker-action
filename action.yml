@@ -10,19 +10,28 @@ branding:
 
 inputs:
   update-latest:
+    type: boolean
     description: Update a "latest" tag
     required: false
     default: false
 
   update-minor:
+    type: boolean
     description: Update vX.Y tags
     required: false
     default: true
 
   prepend-v:
+    type: boolean
     description: Create tags in vX.Y.Z format
     required: false
     default: true
+
+  pre-release-versions:
+    type: string
+    description: Create tags for pre-release versions. Input as array in order of specificity, e.g. "['beta', 'alpha']"
+    required: false
+    default: ""
 
 runs:
   using: composite
@@ -34,6 +43,7 @@ runs:
         latest: ${{ inputs.update-latest }}
         minor: ${{ inputs.update-minor }}
         prependv: ${{ inputs.prepend-v }}
+        prereleaseversions: ${{ inputs.pre-release-versions }}
       run: |
         if [[ $latest == 'true' ]]; then
             params+=('-l')
@@ -46,5 +56,7 @@ runs:
         if [[ $prependv == 'false' ]]; then
             params+=('-v')
         fi
+
+        !!!ADD PRE-RELEASE VERSIONS TO PARAMS!!!
 
         "$GITHUB_ACTION_PATH/tagupdater" "${params[@]}"
