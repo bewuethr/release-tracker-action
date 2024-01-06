@@ -34,10 +34,10 @@ createannotatedtag() {
 
 	# Create tag reference
 	echo "Creating tag reference..."
-	#gh api 'repos/{owner}/{repo}/git/refs' \
-	#	--raw-field "ref=refs/tags/$tag" \
-	#	--raw-field "sha=$tagsha" \
-	#	| jq .
+	gh api 'repos/{owner}/{repo}/git/refs' \
+		--raw-field "ref=refs/tags/$tag" \
+		--raw-field "sha=$tagsha" \
+		| jq .
 }
 
 main() {
