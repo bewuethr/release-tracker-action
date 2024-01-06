@@ -4,7 +4,8 @@
 gettags() {
 	local prefix=$1
 	git tag --list --sort='version:refname' "$prefix*.*.*" \
-		| grep --extended-regexp "^$prefix([[:digit:]]+\.){2}[[:digit:]]+$"
+		| grep --extended-regexp "^$prefix([[:digit:]]+\.){2}[[:digit:]]+"
+
 }
 
 # Get latest semver tag
@@ -71,7 +72,8 @@ main() {
 
 	echo "Building tag table..."
 	local major minor patch
-	while IFS=. read -r major minor patch; do
+	while IFS=".""-" read -r major minor patch pre prepatch ; do
+		echo "$major.$minor.$patch-$pre.$prepatch"
 		latest["$major"]="$major.$minor.$patch"
 		[[ $updateminor == 'true' ]] && latest["$major.$minor"]="$major.$minor.$patch"
 	done < <(gettags "$prefix")
