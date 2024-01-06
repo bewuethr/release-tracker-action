@@ -27,12 +27,6 @@ inputs:
     required: false
     default: true
 
-  pre-release-versions:
-    type: string
-    description: Create tags for pre-release versions. Input as array in order of specificity, e.g. "['beta', 'alpha']"
-    required: false
-    default: ""
-
 runs:
   using: composite
 
@@ -43,7 +37,6 @@ runs:
         latest: ${{ inputs.update-latest }}
         minor: ${{ inputs.update-minor }}
         prependv: ${{ inputs.prepend-v }}
-        prereleaseversions: ${{ inputs.pre-release-versions }}
       run: |
         if [[ $latest == 'true' ]]; then
             params+=('-l')
@@ -56,7 +49,5 @@ runs:
         if [[ $prependv == 'false' ]]; then
             params+=('-v')
         fi
-
-        params+=($prereleaseversions)
 
         "$GITHUB_ACTION_PATH/tagupdater" "${params[@]}"
