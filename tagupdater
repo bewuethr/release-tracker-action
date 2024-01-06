@@ -71,7 +71,7 @@ main() {
 			[[ $updatelatest == 'true' ]] && latest["latest"]="$major.$minor.$patch"
 			[[ $updateminor == 'true' ]] && latest["$major.$minor"]="$major.$minor.$patch"
 		elif [[ $prepatch ]]; then latest["$major.$minor-pre"]="$major.$minor.$patch-$pre.$prepatch"
-		else latest["$major.$minor-pre"]="$major.$minor.$patch-$pre" fi
+		else latest["$major.$minor-pre"]="$major.$minor.$patch-$pre"; fi
 	done < <(gettags "$prefix")
 
 	# Move or create tags
