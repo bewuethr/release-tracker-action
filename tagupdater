@@ -4,7 +4,9 @@
 gettags() {
 	local prefix=$1
 	git tag --list --sort='version:refname' "$prefix*.*.*" \
-		| grep --extended-regexp "^$prefix([[:digit:]]+\.){2}[[:digit:]]+(-[[:alpha:]]+(\.[[:digit:]]+)?)?$"
+		| grep --extended-regexp "{(?x)^$prefix([[:digit:]]+\.){2}[[:digit:]]+
+					  (-([[:alpha:]]+|(0|[1-9][0-9]*)))?
+					  ((\.|-)+([[:alpha:]]?|(0|[1-9][0-9]*)))*$}"
 }
 
 # Get SHA of object ref points to
