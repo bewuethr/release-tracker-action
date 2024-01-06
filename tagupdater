@@ -1,17 +1,10 @@
 #!/usr/bin/env bash
 
-# List all semver tags and sort them; exclude pre-release tags
+# List all semver tags and sort them
 gettags() {
 	local prefix=$1
 	git tag --list --sort='version:refname' "$prefix*.*.*" \
-		| grep --extended-regexp "^$prefix([[:digit:]]+\.){2}[[:digit:]]+$"
-}
-
-# List all pre-release semver tags and sort them
-getpretags() {
-	local prefix=$1
-	git tag --list --sort='version:refname' "$prefix*.*.*-*" \
-		| grep --extended-regexp "^$prefix([[:digit:]]+\.){2}[[:digit:]]+-[[:alpha:]]+(\.[[:digit:]]+)?$"
+		| grep --extended-regexp "^$prefix([[:digit:]]+\.){2}[[:digit:]]+(-[[:alpha:]]+(\.[[:digit:]]+)?)?$"
 }
 
 # Get latest semver tag
@@ -77,10 +70,12 @@ main() {
 	local -A latest
 
 	echo "Building tag table..."
-	local major minor patch
-	while IFS=. read -r major minor patch ; do
-		latest["$major"]="$major.$minor.$patch"
-		[[ $updateminor == 'true' ]] && latest["$major.$minor"]="$major.$minor.$patch"
+	local major minor patch pre prepatch
+	while IFS=".""-" read -r major minor patch pre prepatch ; do
+		[[ ! $pre ]] && latest["$major"]="$major.$minor.$patch"
+		[[ ! $pre ]] && [[ $updateminor == 'true' ]] && latest["$major.$minor"]="$major.$minor.$patch"
+		[[ $pre ]] && latest["$major.$minor-pre"]="$major.$minor.$patch-$pre"
+		[[ $pre ]] && [[ $prepatch ]] latest["$major.$minor-pre"]="$major.$minor.$patch-$pre.$prepatch"
 	done < <(gettags "$prefix")
 
 	# Add "latest" tag if there are tags and the option is set
@@ -106,21 +101,6 @@ main() {
 		echo "Creating annotated tag $tag pointing to same commit as $semvertag..."
 		createannotatedtag "$tag" "$semvertag"
 	done
-
-	# Update prerelease tags
-	if [[ $updateminor == 'true' ]]; then
-		local -A latestpre
-		local pre prepatch
-		while IFS=".""-" read -r major minor patch pre prepatch ; do
-			if [[ $prepatch ]]; then
-				echo $major.$minor.$patch-$pre.$prepatch
-				latestpre["$major.$minor-pre"]="$major.$minor.$patch-$pre.$prepatch"
-			else
-				echo $major.$minor.$patch-$pre
-				latestpre["$major.$minor-pre"]="$major.$minor.$patch-$pre"
-			fi
-		done < <(getpretags "$prefix")
-	fi
 }
 
 [[ ${BASH_SOURCE[0]} == "$0" ]] && main "$@"
