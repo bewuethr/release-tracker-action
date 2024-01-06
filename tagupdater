@@ -114,7 +114,7 @@ main() {
 			echo $major.$minor.$patch-$pre.$prepatch
 			if [[ $prepatch ]]; then
 				latestpre["$major.$minor"]="$major.$minor.$patch-$pre.$prepatch"
-			elif
+			else
 				latestpre["$major.$minor"]="$major.$minor.$patch-$pre"
 			fi
 		done < <(getpretags "$prefix")
