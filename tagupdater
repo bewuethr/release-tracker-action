@@ -4,8 +4,13 @@
 gettags() {
 	local prefix=$1
 	git tag --list --sort='version:refname' "$prefix*.*.*" \
-		| grep --extended-regexp "^$prefix([[:digit:]]+\.){2}[[:digit:]]+"
+		| grep --extended-regexp "^$prefix([[:digit:]]+\.){2}[[:digit:]]+$"
+}
 
+getpretags() {
+	local prefix=$1
+	git tag --list --sort='version:refname' "$prefix*.*.*-*" \
+		| grep --extended-regexp "^$prefix([[:digit:]]+\.){2}[[:digit:]]+-[[:alpha:]](\.[[:digit]]+)?$"
 }
 
 # Get latest semver tag
@@ -72,8 +77,7 @@ main() {
 
 	echo "Building tag table..."
 	local major minor patch
-	while IFS=".""-" read -r major minor patch pre prepatch ; do
-		echo "$major.$minor.$patch-$pre.$prepatch"
+	while IFS=. read -r major minor patch ; do
 		latest["$major"]="$major.$minor.$patch"
 		[[ $updateminor == 'true' ]] && latest["$major.$minor"]="$major.$minor.$patch"
 	done < <(gettags "$prefix")
@@ -101,6 +105,20 @@ main() {
 		echo "Creating annotated tag $tag pointing to same commit as $semvertag..."
 		createannotatedtag "$tag" "$semvertag"
 	done
+
+	# Update prerelease tags
+	if [[ $updateminor == 'true' ]]; then
+		local -A latestpre
+		local pre prepatch
+		while IFS=".""-" read -r major minor patch pre prepatch ; do
+			echo $major.$minor.$patch-$pre.$prepatch
+			if [[ $prepatch ]]; then
+				latestpre["$major.$minor"]="$major.$minor.$patch-$pre.$prepatch"
+			elif
+				latestpre["$major.$minor"]="$major.$minor.$patch-$pre"
+			fi
+		done < <(getpretags "$prefix")
+	fi
 }
 
 [[ ${BASH_SOURCE[0]} == "$0" ]] && main "$@"
