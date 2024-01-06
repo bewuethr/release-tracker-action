@@ -75,7 +75,7 @@ main() {
 		[[ ! $pre ]] && latest["$major"]="$major.$minor.$patch"
 		[[ ! $pre ]] && [[ $updateminor == 'true' ]] && latest["$major.$minor"]="$major.$minor.$patch"
 		[[ $pre ]] && latest["$major.$minor-pre"]="$major.$minor.$patch-$pre"
-		[[ $pre ]] && [[ $prepatch ]] latest["$major.$minor-pre"]="$major.$minor.$patch-$pre.$prepatch"
+		[[ $pre ]] && [[ $prepatch ]] && latest["$major.$minor-pre"]="$major.$minor.$patch-$pre.$prepatch"
 	done < <(gettags "$prefix")
 
 	# Add "latest" tag if there are tags and the option is set
