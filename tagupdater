@@ -112,11 +112,12 @@ main() {
 		local -A latestpre
 		local pre prepatch
 		while IFS=".""-" read -r major minor patch pre prepatch ; do
-			echo $major.$minor.$patch-$pre.$prepatch
 			if [[ $prepatch ]]; then
-				latestpre["$major.$minor"]="$major.$minor.$patch-$pre.$prepatch"
+				echo $major.$minor.$patch-$pre.$prepatch
+				latestpre["$major.$minor-pre"]="$major.$minor.$patch-$pre.$prepatch"
 			else
-				latestpre["$major.$minor"]="$major.$minor.$patch-$pre"
+				echo $major.$minor.$patch-$pre
+				latestpre["$major.$minor-pre"]="$major.$minor.$patch-$pre"
 			fi
 		done < <(getpretags "$prefix")
 	fi
