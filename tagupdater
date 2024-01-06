@@ -7,12 +7,6 @@ gettags() {
 		| grep --extended-regexp "^$prefix([[:digit:]]+\.){2}[[:digit:]]+(-[[:alpha:]]+(\.[[:digit:]]+)?)?$"
 }
 
-# Get latest semver tag
-getlatesttag() {
-	local prefix=$1
-	gettags "$prefix" | tail --lines=1
-}
-
 # Get SHA of object ref points to
 getparentsha() {
 	local ref=$1
@@ -72,16 +66,13 @@ main() {
 	echo "Building tag table..."
 	local major minor patch pre prepatch
 	while IFS=".""-" read -r major minor patch pre prepatch ; do
-		[[ ! $pre ]] && latest["$major"]="$major.$minor.$patch"
-		[[ ! $pre ]] && [[ $updateminor == 'true' ]] && latest["$major.$minor"]="$major.$minor.$patch"
-		[[ $pre ]] && latest["$major.$minor-pre"]="$major.$minor.$patch-$pre"
-		[[ $pre ]] && [[ $prepatch ]] && latest["$major.$minor-pre"]="$major.$minor.$patch-$pre.$prepatch"
+		if [[ ! $pre ]]
+			latest["$major"]="$major.$minor.$patch"
+			[[ $updatelatest == 'true' ]] && latest["latest"]="$major.$minor.$patch"
+			[[ $updateminor == 'true' ]] && latest["$major.$minor"]="$major.$minor.$patch"
+		elif [[ $prepatch ]]; then latest["$major.$minor-pre"]="$major.$minor.$patch-$pre.$prepatch"
+		else latest["$major.$minor-pre"]="$major.$minor.$patch-$pre" fi
 	done < <(gettags "$prefix")
-
-	# Add "latest" tag if there are tags and the option is set
-	if ((${#latest[@]})) && [[ $updatelatest == 'true' ]]; then
-		latest['latest']=$(getlatesttag "$prefix")
-	fi
 
 	# Move or create tags
 	local tag semvertag
