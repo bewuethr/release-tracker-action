@@ -9,8 +9,6 @@ gettags() {
 	regex+="(-([[:alpha:]]+|(0|[1-9][0-9]*))"
 	regex+="((\.|-)+([[:alpha:]]*|(0|[1-9][0-9]*)))*)?$}"
 
-	echo "$regex"
-
 	git tag --list --sort='version:refname' "$prefix*.*.*" \
 		| grep --extended-regexp "$regex"
 }
@@ -74,17 +72,17 @@ main() {
 	echo "Building tag table..."
 	local tag semvertag pretag
 	local major minor patch
-
-
-	while IFS=".""-" read -r major minor patch pre prepatch ; do
-		if [[ ! $pre ]]; then
-			latest["$major"]="$major.$minor.$patch"
-			[[ $updatelatest == 'true' ]] && latest["latest"]="$major.$minor.$patch"
-			[[ $updateminor == 'true' ]] && latest["$major.$minor"]="$major.$minor.$patch"
-		elif [[ $updateminor == 'true' ]]; then 
-			[[ $prepatch ]] && latest["$major.$minor-pre"]="$major.$minor.$patch-$pre.$prepatch" || latest["$major.$minor-pre"]="$major.$minor.$patch-$pre"
-		fi
-	done < <(gettags "$prefix")
+	for tag in $(gettags "$prefix") do
+		echo "$tag"
+		IFS=- read -r semvertag pretag <<< "$tag"
+		while IFS=. read -r major minor patch ; do
+			if [[ ! pretag ]]; then
+				latest["$major"]="$major.$minor.$patch"
+				[[ $updatelatest == 'true' ]] && latest["latest"]="$major.$minor.$patch"
+				[[ $updateminor == 'true' ]] && latest["$major.$minor"]="$major.$minor.$patch"
+			else [[ $updateminor == 'true' ]] && latest["$major.$minor-pre"]="$major.$minor.$patch-$pretag; fi
+		done < "$semvertag"
+	done
 
 	# Move or create tags
 	for tag in "${!latest[@]}"; do
