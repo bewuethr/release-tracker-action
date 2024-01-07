@@ -101,34 +101,6 @@ tags look like `X.Y.Z`, `X.Y`, and `X`:
 
 Default `true`.
 
-### `pre-release-versions`
-
-**Optional** `"['beta', 'alpha']"` will take into account the pre-releases `beta` and `alpha` and allow your tags to point at these pre-release versions. Note that tags will always prefer the latest stable version:
-
-```txt
-0.1.0
-0.1.1
-0.1.2
-0.1.3         <-- 0.1
-0.1.4-beta
-0.2.0
-0.2.1
-0.2.2
-0.2.3
-0.2.4         <-- 0.2 <-- 0
-0.3.0-beta
-0.3.0-beta.2  <-- 0.3
-0.3.1-alpha
-1.0.0
-1.0.1         <-- 1.0
-1.1.0
-1.1.1
-1.1.2         <-- 1.1 <-- 1 <-- latest
-1.2.1-alpha
-1.2.1-alpha.2
-1.2.2-alpha   <-- 1.2
-```
-
 ## Example usage
 
 It makes sense to run this action only when a new semantic versioning tag
@@ -151,11 +123,8 @@ on:
       # Switch to '[0-9]+.[0-9]+.[0-9]+' (including the quotes!) if prepend-v
       # is false
       - v[0-9]+.[0-9]+.[0-9]+
-      # To support pre-release versions, add the following lines
-      - v[0-9]+.[0-9]+.[0-9]+-alpha
-      - v[0-9]+.[0-9]+.[0-9]+-alpha.[0-9]+
-      - v[0-9]+.[0-9]+.[0-9]+-beta
-      - v[0-9]+.[0-9]+.[0-9]+-beta.[0-9]+
+      # To support minor pre-release tags, add the following lines and set update-minor to true
+      - v[0-9]+.[0-9]+.[0-9]+-*
 
 jobs:
   update-release-tags:
@@ -183,6 +152,4 @@ jobs:
           update-minor: false
           # Expect vX.Y.Z format (default)
           prepend-v: true
-          # Specify precedence of your pre-release versions
-          pre-release-versions: "['beta', 'alpha']"
 ```
