@@ -66,10 +66,14 @@ main() {
 	local -A latest
 
 	echo "Building tag table..."
-	local semver pretag major minor patch
+	local tag semvertag pretag
+	local semver major minor patch
+	#for tag in "${(gettags $prefix)}"; do
+	#	echo "$tag"
+	#done
 
 	while IFS=- read -r semver pretag <<< "$s" ; do
-		echo semver-pretag
+		echo "$semver-$pretag"
 	done < <(gettags "$prefix")
 
 	while IFS=".""-" read -r major minor patch pre prepatch ; do
@@ -83,7 +87,6 @@ main() {
 	done < <(gettags "$prefix")
 
 	# Move or create tags
-	local tag semvertag
 	for tag in "${!latest[@]}"; do
 		echo "Checking $tag..."
 		semvertag=${latest["$tag"]}
