@@ -75,13 +75,13 @@ main() {
 	for tag in $(gettags "$prefix"); do
 		echo "$tag"
 		IFS=- read -r semvertag pretag <<< "$tag"
-		while IFS=. read major minor patch <<< "$semvertag"; do
-			if [[ ! pretag ]]; then
-				latest["$major"]="$major.$minor.$patch"
-				[[ $updatelatest == 'true' ]] && latest["latest"]="$major.$minor.$patch"
-				[[ $updateminor == 'true' ]] && latest["$major.$minor"]="$major.$minor.$patch"
-			else [[ $updateminor == 'true' ]] && latest["$major.$minor-pre"]="$major.$minor.$patch-$pretag"; fi
-		done
+		IFS=. read -r major semvertag <<< "$semvertag";
+		IFS=. read -r minor patch <<< "$semvertag";
+		if [[ ! pretag ]]; then
+			latest["$major"]="$major.$minor.$patch"
+			[[ $updatelatest == 'true' ]] && latest["latest"]="$major.$minor.$patch"
+			[[ $updateminor == 'true' ]] && latest["$major.$minor"]="$major.$minor.$patch"
+		else [[ $updateminor == 'true' ]] && latest["$major.$minor-pre"]="$major.$minor.$patch-$pretag"; fi
 	done
 
 	# Move or create tags
