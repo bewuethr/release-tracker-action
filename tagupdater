@@ -5,8 +5,8 @@ gettags() {
 	local prefix=$1
 	git tag --list --sort='version:refname' "$prefix*.*.*" \
 		| grep --extended-regexp "{(?x)^$prefix([[:digit:]]+\.){2}[[:digit:]]+
-					  (-([[:alpha:]]+|(0|[1-9][0-9]*)))?
-					  ((\.|-)+([[:alpha:]]?|(0|[1-9][0-9]*)))*$}"
+					  (-([[:alpha:]]+|(0|[1-9][0-9]*))
+					  ((\.|-)+([[:alpha:]]*|(0|[1-9][0-9]*)))*)?$}"
 }
 
 # Get SHA of object ref points to
@@ -66,14 +66,20 @@ main() {
 	local -A latest
 
 	echo "Building tag table..."
-	local major minor patch pre prepatch
+	local semver pretag major minor patch
+
+	while IFS=- read -r semver pretag <<< "$s" ; do
+		echo semver-pretag
+	done < <(gettags "$prefix")
+
 	while IFS=".""-" read -r major minor patch pre prepatch ; do
 		if [[ ! $pre ]]; then
 			latest["$major"]="$major.$minor.$patch"
 			[[ $updatelatest == 'true' ]] && latest["latest"]="$major.$minor.$patch"
 			[[ $updateminor == 'true' ]] && latest["$major.$minor"]="$major.$minor.$patch"
-		elif [[ $prepatch ]]; then latest["$major.$minor-pre"]="$major.$minor.$patch-$pre.$prepatch"
-		else latest["$major.$minor-pre"]="$major.$minor.$patch-$pre"; fi
+		elif [[ $updateminor == 'true' ]]; then 
+			[[ $prepatch ]] && latest["$major.$minor-pre"]="$major.$minor.$patch-$pre.$prepatch" || latest["$major.$minor-pre"]="$major.$minor.$patch-$pre"
+		fi
 	done < <(gettags "$prefix")
 
 	# Move or create tags
