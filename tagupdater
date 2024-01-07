@@ -4,6 +4,7 @@
 gettags() {
 	local prefix=$1
 
+	# These patterns have been taken from semver Backus-Naur form grammar https://semver.org/#backusnaur-form-grammar-for-valid-semver-versions
 	local numeric="(0|[1-9][0-9]*)"
 	local nondigit="([[:alpha:]]|-)"
 	local identifier="([[:digit:]]|$nondigit)"
@@ -13,8 +14,6 @@ gettags() {
 	local semverregex="$prefix([[:digit:]]+\.){2}[[:digit:]]+"
 	local preregex="(-$prerelease(\.$prerelease)*)"
 	local regex="^$semverregex$preregex?$"
-
-	echo "$regex"
 
 	git tag --list --sort='version:refname' "$prefix*.*.*" \
 		| grep --extended-regexp "$regex"
