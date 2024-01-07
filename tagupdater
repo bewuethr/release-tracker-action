@@ -75,7 +75,7 @@ main() {
 	for tag in $(gettags "$prefix"); do
 		echo "$tag"
 		IFS=- read -r semvertag pretag <<< "$tag"
-		while IFS=. read -r major minor patch <<< "$semvertag" ; do
+		while IFS=. read major minor patch <<< "$semvertag"; do
 			if [[ ! pretag ]]; then
 				latest["$major"]="$major.$minor.$patch"
 				[[ $updatelatest == 'true' ]] && latest["latest"]="$major.$minor.$patch"
