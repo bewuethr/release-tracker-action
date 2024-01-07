@@ -4,10 +4,17 @@
 gettags() {
 	local prefix=$1
 
-	local regex
-	regex="^$prefix([[:digit:]]+\.){2}[[:digit:]]+"
-	regex+="(-([[:alpha:]]+|(0|[1-9][0-9]*))"
-	regex+="((\.|-)+([[:alpha:]]*|(0|[1-9][0-9]*)))*)?$"
+	local numeric="(0|[1-9][0-9]*)"
+	local nondigit="([[:alpha:]]|-)"
+	local identifier="([[:digit:]]|$nondigit)"
+	local alphanumeric="($identifier*$nondigit$identifier*)"
+	local prerelease="($alphanumeric|$numeric)"
+
+	local semverregex="$prefix([[:digit:]]+\.){2}[[:digit:]]+"
+	local preregex="(-$prerelease(\.$prerelease)*)"
+	local regex="^$semverregex$preregex?$"
+
+	echo "$regex"
 
 	git tag --list --sort='version:refname' "$prefix*.*.*" \
 		| grep --extended-regexp "$regex"
