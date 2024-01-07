@@ -11,7 +11,7 @@ gettags() {
 	local alphanumeric="($identifier*$nondigit$identifier*)"
 	local prerelease="($alphanumeric|$numeric)"
 
-	local semverregex="$prefix([[:digit:]]+\.){2}[[:digit:]]+"
+	local semverregex="$prefix($numeric+\.){2}$numeric+"
 	local preregex="(-$prerelease(\.$prerelease)*)"
 	local regex="^$semverregex$preregex?$"
 
