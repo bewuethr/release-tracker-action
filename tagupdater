@@ -5,9 +5,9 @@ gettags() {
 	local prefix=$1
 
 	local regex
-	$ regex="^$prefix([[:digit:]]+\.){2}[[:digit:]]+"\
-	> "(-([[:alpha:]]+|(0|[1-9][0-9]*))"\
-	> "((\.|-)+([[:alpha:]]*|(0|[1-9][0-9]*)))*)?$}"
+	regex="^$prefix([[:digit:]]+\.){2}[[:digit:]]+"
+	regex+="(-([[:alpha:]]+|(0|[1-9][0-9]*))"
+	regex+="((\.|-)+([[:alpha:]]*|(0|[1-9][0-9]*)))*)?$}"
 
 	echo "$regex"
 
