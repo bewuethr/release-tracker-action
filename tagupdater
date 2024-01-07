@@ -80,8 +80,8 @@ main() {
 	local major minor patch
 	for tag in $(gettags "$prefix"); do
 		IFS=- read -r semvertag pretag <<< "$tag"
-		IFS=. read -r major semvertag <<< "$semvertag";
-		IFS=. read -r minor patch <<< "$semvertag";
+		IFS=. read -r major semvertag <<< "$semvertag"
+		IFS=. read -r minor patch <<< "$semvertag"
 		if [[ ! $pretag ]]; then
 			latest["$major"]="$major.$minor.$patch"
 			[[ $updatelatest == 'true' ]] && latest["latest"]="$major.$minor.$patch"
