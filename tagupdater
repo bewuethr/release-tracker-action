@@ -67,10 +67,19 @@ main() {
 
 	echo "Building tag table..."
 	local tag semvertag pretag
-	local semver major minor patch
-	for tag; do
+	local major minor patch
+	for tag in gettags "$prefix" do
 		echo "$tag"
-	done < <(gettags "$prefix")
+		IFS=- read -r semvertag pretag <<< "$tag"
+
+		while IFS=. read -r major minor patch ; do
+			if [[ ! pretag ]]; then
+				latest["$major"]="$major.$minor.$patch"
+				[[ $updatelatest == 'true' ]] && latest["latest"]="$major.$minor.$patch"
+				[[ $updateminor == 'true' ]] && latest["$major.$minor"]="$major.$minor.$patch"
+			else [[ $updateminor == 'true' ]] && latest["$major.$minor-pre"]="$major.$minor.$patch-$pretag; fi
+		done < "$semvertag"
+	done
 
 	#while IFS=- read -r semver pretag <<< "$s" ; do
 	#	echo "$semver-$pretag"
