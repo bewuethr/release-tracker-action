@@ -80,7 +80,7 @@ main() {
 				latest["$major"]="$major.$minor.$patch"
 				[[ $updatelatest == 'true' ]] && latest["latest"]="$major.$minor.$patch"
 				[[ $updateminor == 'true' ]] && latest["$major.$minor"]="$major.$minor.$patch"
-			else [[ $updateminor == 'true' ]] && latest["$major.$minor-pre"]="$major.$minor.$patch-$pretag; fi
+			else [[ $updateminor == 'true' ]] && latest["$major.$minor-pre"]="$major.$minor.$patch-$pretag"; fi
 		done < "$semvertag"
 	done
 
