@@ -9,7 +9,7 @@ gettags() {
 	regex+="(-([[:alpha:]]+|(0|[1-9][0-9]*))"
 	regex+="((\.|-)+([[:alpha:]]*|(0|[1-9][0-9]*)))*)?$}"
 
-	git tag --list --sort='version:refname' "$prefix*.*.*" \
+	git tag --list --sort='version:refname' "$prefix*.*.*-*" \
 		| grep --extended-regexp "$regex"
 }
 
