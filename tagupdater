@@ -3,10 +3,16 @@
 # List all semver tags and sort them
 gettags() {
 	local prefix=$1
+
+	local regex
+	$ regex="^$prefix([[:digit:]]+\.){2}[[:digit:]]+"\
+	> "(-([[:alpha:]]+|(0|[1-9][0-9]*))"\
+	> "((\.|-)+([[:alpha:]]*|(0|[1-9][0-9]*)))*)?$}"
+
+	echo "$regex"
+
 	git tag --list --sort='version:refname' "$prefix*.*.*" \
-		| grep --extended-regexp '{(?x)^$prefix([[:digit:]]+\.){2}[[:digit:]]+
-					  (-([[:alpha:]]+|(0|[1-9][0-9]*))
-					  ((\.|-)+([[:alpha:]]*|(0|[1-9][0-9]*)))*)?$}'
+		| grep --extended-regexp "$regex"
 }
 
 # Get SHA of object ref points to
