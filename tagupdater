@@ -68,13 +68,13 @@ main() {
 	echo "Building tag table..."
 	local tag semvertag pretag
 	local semver major minor patch
-	#for tag in "${(gettags $prefix)}"; do
-	#	echo "$tag"
-	#done
+	for tag in (gettags $prefix); do
+		echo "$tag"
+	done
 
-	while IFS=- read -r semver pretag <<< "$s" ; do
-		echo "$semver-$pretag"
-	done < <(gettags "$prefix")
+	#while IFS=- read -r semver pretag <<< "$s" ; do
+	#	echo "$semver-$pretag"
+	#done < <(gettags "$prefix")
 
 	while IFS=".""-" read -r major minor patch pre prepatch ; do
 		if [[ ! $pre ]]; then
