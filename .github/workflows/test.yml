@@ -1,0 +1,39 @@
+name: Run tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Run Bats tests
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4.1.1
+
+      - name: Get Bats repository
+        uses: actions/checkout@v4.1.1
+        with:
+          repository: bats-core/bats-core
+          ref: v1.10.0
+          path: bats-core
+
+      - name: Install Bats
+        working-directory: bats-core
+        run: |
+          echo "::group::Install Bats"
+          ./install.sh "$HOME"
+          printf '%s\n' "$HOME/bin" >> "$GITHUB_PATH"
+          echo "::endgroup::"
+
+      - name: Run tests
+        run: bats --version
