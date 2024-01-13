@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
-# List all semver tags and sort them
-gettags() {
+# Filter tags to match SemVer including pre-releases
+filter() {
 	local prefix=$1
 
-	# These patterns have been taken from semver Backus-Naur form grammar https://semver.org/#backusnaur-form-grammar-for-valid-semver-versions
+	# These patterns have been taken from semver Backus-Naur form grammar
+	# https://semver.org/#backusnaur-form-grammar-for-valid-semver-versions
 	local numeric="(0|[1-9][0-9]*)"
 	local nondigit="([[:alpha:]]|-)"
 	local identifier="([[:digit:]]|$nondigit)"
@@ -15,8 +16,15 @@ gettags() {
 	local preregex="(-$prerelease(\.$prerelease)*)"
 	local regex="^$semverregex$preregex?$"
 
+	grep --extended-regexp "$regex"
+}
+
+# List all semver tags and sort them
+gettags() {
+	local prefix=$1
+
 	git tag --list --sort='version:refname' "$prefix*.*.*" \
-		| grep --extended-regexp "$regex"
+		| filter "$prefix"
 }
 
 # Get SHA of object ref points to
