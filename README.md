@@ -120,7 +120,8 @@ name: Update release tags
 on:
   push:
     tags:
-      # Switch to '[0-9]+.[0-9]+.[0-9]+' if prepend-v is false
+      # Switch to '[0-9]+.[0-9]+.[0-9]+' (including the quotes!) if prepend-v
+      # is false
       - v[0-9]+.[0-9]+.[0-9]+
 
 jobs:
