@@ -15,4 +15,4 @@ permissions:
 jobs:
   lint:
     name: Lint code base
-    uses: bewuethr/workflows/.github/workflows/linter.yml@deep-on-fork
+    uses: bewuethr/workflows/.github/workflows/linter.yml@main
