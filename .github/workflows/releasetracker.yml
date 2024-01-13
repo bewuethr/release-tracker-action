@@ -6,16 +6,20 @@ on:
     tags:
       - v[0-9]+.[0-9]+.[0-9]+
 
+permissions:
+  contents: write
+
 jobs:
   update-release-tags:
     name: Move tags
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
 
       - name: Check out code
         uses: actions/checkout@v4.1.1
         with:
           fetch-depth: 0
+          show-progress: false
 
       - name: Update release tags for latest major and minor releases
         uses: bewuethr/release-tracker-action@v1
