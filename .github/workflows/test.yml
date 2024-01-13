@@ -34,4 +34,4 @@ jobs:
           printf '%s\n' "$HOME/bin" >> "$GITHUB_PATH"
 
       - name: Run tests
-        run: bats --version
+        run: bats --tap test
