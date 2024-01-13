@@ -30,10 +30,8 @@ jobs:
       - name: Install Bats
         working-directory: bats-core
         run: |
-          echo "::group::Install Bats"
           ./install.sh "$HOME"
           printf '%s\n' "$HOME/bin" >> "$GITHUB_PATH"
-          echo "::endgroup::"
 
       - name: Run tests
         run: bats --version
