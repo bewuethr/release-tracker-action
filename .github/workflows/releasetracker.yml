@@ -16,6 +16,7 @@ jobs:
         uses: actions/checkout@v4.1.1
         with:
           fetch-depth: 0
+          show-progress: false
 
       - name: Update release tags for latest major and minor releases
         uses: bewuethr/release-tracker-action@v1
