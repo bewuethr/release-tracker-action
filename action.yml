@@ -10,19 +10,16 @@ branding:
 
 inputs:
   update-latest:
-    type: boolean
     description: Update a "latest" tag
     required: false
     default: false
 
   update-minor:
-    type: boolean
     description: Update vX.Y tags
     required: false
     default: true
 
   prepend-v:
-    type: boolean
     description: Create tags in vX.Y.Z format
     required: false
     default: true
