@@ -75,11 +75,17 @@ tagtable() {
 		IFS=. read -r minor patch <<< "$semvertag"
 		if [[ ! $pretag ]]; then
 			table["$major"]="$major.$minor.$patch"
-			[[ $updatelatest == 'true' ]] && table["latest"]="$major.$minor.$patch"
-			[[ $updateminor == 'true' ]] && table["$major.$minor"]="$major.$minor.$patch"
-		else
+
+			if [[ $updatelatest == 'true' ]]; then
+				table["latest"]="$major.$minor.$patch"
+			fi
+
+			if [[ $updateminor == 'true' ]]; then
+				table["$major.$minor"]="$major.$minor.$patch"
+			fi
+		elif [[ $updateminor == 'true' ]]; then
 			# shellcheck disable=SC2034
-			[[ $updateminor == 'true' ]] && table["$major.$minor-pre"]="$major.$minor.$patch-$pretag"
+			table["$major.$minor-pre"]="$major.$minor.$patch-$pretag"
 		fi
 	done
 }
