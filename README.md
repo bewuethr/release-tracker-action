@@ -2,11 +2,14 @@
 
 [![Lint code base][lintbadge]][lintflow]
 [![Move release tags][movebadge]][moveflow]
+[![Tests][testbadge]][testflow]
 
 [lintbadge]: <https://github.com/bewuethr/release-tracker-action/actions/workflows/linter.yml/badge.svg>
 [lintflow]:  <https://github.com/bewuethr/release-tracker-action/actions/workflows/linter.yml>
 [movebadge]: <https://github.com/bewuethr/release-tracker-action/actions/workflows/releasetracker.yml/badge.svg>
 [moveflow]:  <https://github.com/bewuethr/release-tracker-action/actions/workflows/releasetracker.yml>
+[testbadge]: <https://github.com/bewuethr/release-tracker-action/actions/workflows/test.yml/badge.svg>
+[testflow]:  <https://github.com/bewuethr/release-tracker-action/actions/workflows/test.yml>
 
 This action finds the most recent major and (optionally) minor release tags,
 and creates or moves tags to point at them.
