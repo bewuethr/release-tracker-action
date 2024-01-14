@@ -23,7 +23,7 @@ filter() {
 gettags() {
 	local prefix=$1
 
-	git tag --list --sort='version:refname' "$prefix*.*.*" \
+	git -c versionsort.suffix=- tag --list --sort='version:refname' "$prefix*.*.*" \
 		| filter "$prefix"
 }
 
