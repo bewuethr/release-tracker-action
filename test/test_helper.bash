@@ -14,6 +14,11 @@ setup() {
 	fi
 
 	cd /tmp/tagupdater-testrepo || return 1
+
+	touch afile
+	git add afile
+	git commit -m "Add file"
+
 }
 
 teardown() {
