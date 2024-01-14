@@ -60,6 +60,30 @@ createannotatedtag() {
 		| jq .
 }
 
+# Populate associative array with additional tags
+tagtable() {
+	local -n table=$1
+	local prefix=$2
+	local updatelatest=$3
+	local updateminor=$4
+
+	local tag semvertag pretag
+	local major minor patch
+	for tag in $(gettags "$prefix"); do
+		IFS=- read -r semvertag pretag <<< "$tag"
+		IFS=. read -r major semvertag <<< "$semvertag"
+		IFS=. read -r minor patch <<< "$semvertag"
+		if [[ ! $pretag ]]; then
+			table["$major"]="$major.$minor.$patch"
+			[[ $updatelatest == 'true' ]] && table["latest"]="$major.$minor.$patch"
+			[[ $updateminor == 'true' ]] && table["$major.$minor"]="$major.$minor.$patch"
+		else
+			# shellcheck disable=SC2034
+			[[ $updateminor == 'true' ]] && table["$major.$minor-pre"]="$major.$minor.$patch-$pretag"
+		fi
+	done
+}
+
 main() {
 	# Parse options
 	local opt updatelatest updateminor prefix
@@ -84,18 +108,7 @@ main() {
 	local -A latest
 
 	echo "Building tag table..."
-	local tag semvertag pretag
-	local major minor patch
-	for tag in $(gettags "$prefix"); do
-		IFS=- read -r semvertag pretag <<< "$tag"
-		IFS=. read -r major semvertag <<< "$semvertag"
-		IFS=. read -r minor patch <<< "$semvertag"
-		if [[ ! $pretag ]]; then
-			latest["$major"]="$major.$minor.$patch"
-			[[ $updatelatest == 'true' ]] && latest["latest"]="$major.$minor.$patch"
-			[[ $updateminor == 'true' ]] && latest["$major.$minor"]="$major.$minor.$patch"
-		else [[ $updateminor == 'true' ]] && latest["$major.$minor-pre"]="$major.$minor.$patch-$pretag"; fi
-	done
+	tagtable latest "$prefix" "$updatelatest" "$updateminor"
 
 	# Move or create tags
 	for tag in "${!latest[@]}"; do
