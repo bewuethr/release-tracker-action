@@ -1,0 +1,11 @@
+changelog:
+  categories:
+    - title: 'Fixes :wrench: doc updates :bookmark_tabs: and features :rocket:'
+      labels:
+        - '*'
+      exclude:
+        labels:
+          - dependencies
+    - title: 'Dependencies :octocat:'
+      labels:
+        - dependencies
