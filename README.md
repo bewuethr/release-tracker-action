@@ -123,6 +123,8 @@ on:
       # Switch to '[0-9]+.[0-9]+.[0-9]+' (including the quotes!) if prepend-v
       # is false
       - v[0-9]+.[0-9]+.[0-9]+
+      # To support minor pre-release tags, add the following lines and set update-minor to true
+      - v[0-9]+.[0-9]+.[0-9]+-*
 
 jobs:
   update-release-tags:

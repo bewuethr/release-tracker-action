@@ -1,16 +1,22 @@
 #!/usr/bin/env bash
 
-# List all semver tags and sort them; exclude pre-release tags
+# List all semver tags and sort them
 gettags() {
 	local prefix=$1
-	git tag --list --sort='version:refname' "$prefix*.*.*" \
-		| grep --extended-regexp "^$prefix([[:digit:]]+\.){2}[[:digit:]]+$"
-}
 
-# Get latest semver tag
-getlatesttag() {
-	local prefix=$1
-	gettags "$prefix" | tail --lines=1
+	# These patterns have been taken from semver Backus-Naur form grammar https://semver.org/#backusnaur-form-grammar-for-valid-semver-versions
+	local numeric="(0|[1-9][0-9]*)"
+	local nondigit="([[:alpha:]]|-)"
+	local identifier="([[:digit:]]|$nondigit)"
+	local alphanumeric="($identifier*$nondigit$identifier*)"
+	local prerelease="($alphanumeric|$numeric)"
+
+	local semverregex="$prefix($numeric\.){2}$numeric"
+	local preregex="(-$prerelease(\.$prerelease)*)"
+	local regex="^$semverregex$preregex?$"
+
+	git tag --list --sort='version:refname' "$prefix*.*.*" \
+		| grep --extended-regexp "$regex"
 }
 
 # Get SHA of object ref points to
@@ -70,19 +76,20 @@ main() {
 	local -A latest
 
 	echo "Building tag table..."
+	local tag semvertag pretag
 	local major minor patch
-	while IFS=. read -r major minor patch; do
-		latest["$major"]="$major.$minor.$patch"
-		[[ $updateminor == 'true' ]] && latest["$major.$minor"]="$major.$minor.$patch"
-	done < <(gettags "$prefix")
-
-	# Add "latest" tag if there are tags and the option is set
-	if ((${#latest[@]})) && [[ $updatelatest == 'true' ]]; then
-		latest['latest']=$(getlatesttag "$prefix")
-	fi
+	for tag in $(gettags "$prefix"); do
+		IFS=- read -r semvertag pretag <<< "$tag"
+		IFS=. read -r major semvertag <<< "$semvertag"
+		IFS=. read -r minor patch <<< "$semvertag"
+		if [[ ! $pretag ]]; then
+			latest["$major"]="$major.$minor.$patch"
+			[[ $updatelatest == 'true' ]] && latest["latest"]="$major.$minor.$patch"
+			[[ $updateminor == 'true' ]] && latest["$major.$minor"]="$major.$minor.$patch"
+		else [[ $updateminor == 'true' ]] && latest["$major.$minor-pre"]="$major.$minor.$patch-$pretag"; fi
+	done
 
 	# Move or create tags
-	local tag semvertag
 	for tag in "${!latest[@]}"; do
 		echo "Checking $tag..."
 		semvertag=${latest["$tag"]}
