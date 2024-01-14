@@ -67,27 +67,29 @@ tagtable() {
 	local updatelatest=$3
 	local updateminor=$4
 
-	local tag semvertag pretag
+	local coretag pretag
 	local major minor patch
-	for tag in $(gettags "$prefix"); do
-		IFS=- read -r semvertag pretag <<< "$tag"
-		IFS=. read -r major semvertag <<< "$semvertag"
-		IFS=. read -r minor patch <<< "$semvertag"
-		if [[ ! $pretag ]]; then
-			table["$major"]="$major.$minor.$patch"
-
-			if [[ $updatelatest == 'true' ]]; then
-				table["latest"]="$major.$minor.$patch"
-			fi
-
+	while IFS=- read -r coretag pretag; do
+		IFS=. read -r major minor patch <<< "$coretag"
+		if [[ -n $pretag ]]; then
 			if [[ $updateminor == 'true' ]]; then
-				table["$major.$minor"]="$major.$minor.$patch"
+				table["$major.$minor-pre"]="$major.$minor.$patch-$pretag"
 			fi
-		elif [[ $updateminor == 'true' ]]; then
-			# shellcheck disable=SC2034
-			table["$major.$minor-pre"]="$major.$minor.$patch-$pretag"
+
+			continue
 		fi
-	done
+
+		table["$major"]="$major.$minor.$patch"
+
+		if [[ $updatelatest == 'true' ]]; then
+			table["latest"]="$major.$minor.$patch"
+		fi
+
+		if [[ $updateminor == 'true' ]]; then
+			# shellcheck disable=SC2034
+			table["$major.$minor"]="$major.$minor.$patch"
+		fi
+	done < <(gettags "$prefix")
 }
 
 main() {
