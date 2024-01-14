@@ -1,5 +1,5 @@
 setup() {
-	# shellcheck source=../tagupdater
+	# shellcheck source=/dev/null
 	source tagupdater
 
 	local repo='/tmp/tagupdater-testrepo'
