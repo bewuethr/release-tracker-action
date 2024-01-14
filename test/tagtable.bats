@@ -41,3 +41,43 @@ load test_helper.bash
 		[[ ${got["$key"]} == "${want["$key"]}" ]]
 	done
 }
+
+@test "Creates major tags without prefix" {
+	tags=(
+		0.1.0
+		0.1.1
+		0.2.0
+		1.0.0-alpha
+		1.0.0-beta
+		1.0.0
+		1.0.1
+		1.1.0-alpha
+		1.1.0
+		1.2.0
+		2.0.0-alpha
+		2.0.0
+	)
+
+	for tag in "${tags[@]}"; do
+		git tag "$tag"
+	done
+
+	declare -A got
+	tagtable got '' false false
+
+	declare -A want=(
+		['0']='0.2.0'
+		['1']='1.2.0'
+		['2']='2.0.0'
+	)
+
+	# Debug output for failure
+	for newtag in {0..2}; do
+		printf '%s --> %s (want %s)\n' \
+			"$newtag" "${got["$newtag"]}" "${want["$newtag"]}"
+	done
+
+	for key in "${!want[@]}"; do
+		[[ ${got["$key"]} == "${want["$key"]}" ]]
+	done
+}
