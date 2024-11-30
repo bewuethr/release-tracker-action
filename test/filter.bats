@@ -1,5 +1,3 @@
-#!/usr/bin/env bats
-
 load test_helper.bash
 
 @test "Matches v1.0.0" {

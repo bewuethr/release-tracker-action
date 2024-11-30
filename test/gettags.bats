@@ -1,5 +1,3 @@
-#!/usr/bin/env bats
-
 load test_helper.bash
 
 @test "Sorts version core tags according to spec" {

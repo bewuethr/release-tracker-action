@@ -20,18 +20,17 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4.2.2
 
-      - name: Get Bats repository
-        uses: actions/checkout@v4.2.2
-        with:
-          repository: bats-core/bats-core
-          ref: v1.11.0
-          path: bats-core
-
       - name: Install Bats
-        working-directory: bats-core
-        run: |
-          ./install.sh "$HOME"
-          printf '%s\n' "$HOME/bin" >> "$GITHUB_PATH"
+        id: setup-bats
+        uses: bats-core/bats-action@3.0.0
+        with:
+          bats-version: v1.11.1
+          support-path: ${{ github.workspace }}/tests/bats-support
+          assert-path: ${{ github.workspace }}/tests/bats-assert
+          detik-path: ${{ github.workspace }}/tests/bats-detik
+          file-path: ${{ github.workspace }}/tests/bats-file
 
       - name: Run tests
+        env:
+          BATS_LIB_PATH: ${{ steps.setup-bats.outputs.lib-path }}
         run: bats --tap test
